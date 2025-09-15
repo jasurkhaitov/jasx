@@ -186,7 +186,7 @@ export default function BrowsePage() {
 						</p>
 					</div>
 				</div>
-				<div className='mx-auto grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-3 lg:gap-12'>
+				<div className='mx-auto grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-3 lg:gap-10'>
 					<Card>
 						<CardHeader>
 							<div className='flex items-center gap-2'>

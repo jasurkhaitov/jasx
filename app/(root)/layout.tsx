@@ -1,7 +1,13 @@
+import { getCurrentUser } from '@/lib/actions/auth.action'
+import { redirect } from 'next/navigation'
 import React from 'react'
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-	return (
-		<div>{children}</div>
-	)
+export default async function RootLayout({
+	children,
+}: {
+	children: React.ReactNode
+}) {
+	const user = await getCurrentUser()
+	if (user) redirect('/dashboard')
+	return <div>{children}</div>
 }

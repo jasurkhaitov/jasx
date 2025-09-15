@@ -5,7 +5,9 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import Link from 'next/link'
-import { Brain, Mail, Lock } from 'lucide-react'
+import { Brain, Mail, Lock, Eye, EyeOff } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -18,8 +20,11 @@ import {
 	FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { toast } from 'sonner'
-import { useRouter } from 'next/navigation'
+
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import { auth } from '@/firebase/client'
+
+import { signIn } from '@/lib/actions/auth.action'
 
 const signInSchema = z.object({
 	email: z.string().email('Please enter a valid email address'),
@@ -30,7 +35,7 @@ type SignInFormData = z.infer<typeof signInSchema>
 
 export default function SignInPage() {
 	const [isLoading, setIsLoading] = useState(false)
-
+	const [showPassword, setShowPassword] = useState(false)
 	const router = useRouter()
 
 	const form = useForm<SignInFormData>({
@@ -43,19 +48,33 @@ export default function SignInPage() {
 
 	const onSubmit = async (data: SignInFormData) => {
 		setIsLoading(true)
-
 		try {
-			await new Promise(resolve => setTimeout(resolve, 1500))
+			const userCredential = await signInWithEmailAndPassword(
+				auth,
+				data.email,
+				data.password
+			)
+			const user = userCredential.user
 
-			toast('Welcome Back', {
-				description: 'You have successfully signed in to JasX.',
+			const idToken = await user.getIdToken()
+
+			const result = await signIn({
+				email: data.email,
+				idToken,
 			})
 
-			router.push('/dashboard')
+			if (!result.success) {
+				toast.error(result.message || 'Failed to sign in')
+				return
+			}
 
-			console.log('Sign in data:', data)
+			toast.success('Welcome back!', {
+				description: 'You have successfully signed in to JasX.',
+			})
+			router.push('/dashboard')
 		} catch (error) {
-			toast.error(`${error} "Sign in failed"`, {
+			console.error(error)
+			toast.error('Sign in failed', {
 				description: 'Please check your credentials and try again.',
 			})
 		} finally {
@@ -107,11 +126,22 @@ export default function SignInPage() {
 											<div className='relative'>
 												<Lock className='absolute left-3 top-3 h-4 w-4 text-muted-foreground' />
 												<Input
-													type='password'
+													type={showPassword ? 'text' : 'password'}
 													placeholder='Enter your password'
-													className='pl-10'
+													className='pl-10 pr-10'
 													{...field}
 												/>
+												<button
+													type='button'
+													onClick={() => setShowPassword(!showPassword)}
+													className='absolute cursor-pointer right-3 top-3 text-muted-foreground hover:text-foreground transition-colors'
+												>
+													{showPassword ? (
+														<EyeOff className='h-4 w-4' />
+													) : (
+														<Eye className='h-4 w-4' />
+													)}
+												</button>
 											</div>
 										</FormControl>
 										<FormMessage />
@@ -121,7 +151,7 @@ export default function SignInPage() {
 
 							<Button
 								type='submit'
-								className='w-full mt-2'
+								className='w-full mt-1'
 								disabled={isLoading}
 							>
 								{isLoading ? 'Signing in...' : 'Sign In'}
@@ -131,7 +161,7 @@ export default function SignInPage() {
 
 					<div className='mt-3 text-center text-sm'>
 						<span className='text-muted-foreground'>
-							Don&apos;t have an account ?{' '}
+							Don&apos;t have an account?{' '}
 						</span>
 						<Link
 							href='/sign-up'
