@@ -1,4 +1,4 @@
-import { ModeToggle } from '@/components/theme-toggle'
+import { ModeToggle } from '@/components/theme/theme-toggle'
 import { UserNav } from '@/components/UserNav'
 import { getCurrentUser } from '@/lib/actions/auth.action'
 import { Brain } from 'lucide-react'
