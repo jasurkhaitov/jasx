@@ -25,7 +25,7 @@ export default async function InterviewPage() {
 				<Badge variant={'destructive'}>Technical Interview</Badge>
 			</div>
 
-			<Agent name={user?.name} />
+			<Agent userId={user.id} userName={user?.name} type="generate" />
 		</>
 	)
 }

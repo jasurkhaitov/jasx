@@ -1,14 +1,16 @@
 import { ModeToggle } from '@/components/theme/theme-toggle'
 import { UserNav } from '@/components/UserNav'
+import { getCurrentUser } from '@/lib/actions/auth.action'
 import { Brain } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
 
-export default function InterviewLayout({
+export default async function InterviewLayout({
 	children,
 }: {
 	children: React.ReactNode
 }) {
+	const user = await getCurrentUser()
 	return (
 		<div className='overflow-x-hidden min-h-screen max-w-7xl m-auto px-4 bg-background'>
 			<header className='md:py-1 px-3 md:px-5 w-full border-b fixed left-0 top-0 z-40 py-1 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
@@ -20,7 +22,7 @@ export default function InterviewLayout({
 
 					<div className='flex items-center justify-between space-x-5'>
 						<ModeToggle />
-						<UserNav />
+						<UserNav user={user} />
 					</div>
 				</div>
 			</header>

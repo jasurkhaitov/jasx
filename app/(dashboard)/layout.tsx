@@ -28,7 +28,7 @@ export default async function DashboardLayout({
 
 					<div className='flex items-center justify-between space-x-5'>
 						<ModeToggle />
-						<UserNav />
+						<UserNav user={user} />
 					</div>
 				</div>
 			</header>

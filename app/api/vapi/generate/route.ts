@@ -43,19 +43,10 @@ export async function POST(request: Request) {
 	} catch (error) {
 		console.error('Error:', error)
 
-		return Response.json(
-			{
-				success: false,
-				error: {
-					message: error.message || 'Unknown error',
-					stack: error.stack,
-					cause: error.cause,
-				},
-			},
-			{ status: 500 }
-		)
+		return Response.json({
+			success: false,
+		})
 	}
-
 }
 
 export async function GET() {

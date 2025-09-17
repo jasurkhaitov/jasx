@@ -1,8 +1,15 @@
-import React from 'react'
-import { Card } from './ui/card'
+'use client'
+
 import Image from 'next/image'
-import { Button } from './ui/button'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+
 import { cn } from '@/lib/utils'
+import { vapi } from '@/lib/vapi.sdk'
+import { interviewer } from '@/constants'
+import { createFeedback } from '@/lib/actions/general.action'
+import { Card } from './ui/card'
+import { Button } from './ui/button'
 
 enum CallStatus {
 	INACTIVE = 'INACTIVE',
@@ -11,17 +18,134 @@ enum CallStatus {
 	FINISHED = 'FINISHED',
 }
 
-export default function Agent({ name }: { name: string }) {
-	const isSpeaking = true
-	const isUserSpeaking = true
+interface SavedMessage {
+	role: 'user' | 'system' | 'assistant'
+	content: string
+}
 
-	const callStatus = CallStatus.FINISHED
+export default function Agent({
+	userName,
+	userId,
+	interviewId,
+	feedbackId,
+	type,
+	questions,
+}: AgentProps) {
+	const router = useRouter()
+	const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE)
+	const [messages, setMessages] = useState<SavedMessage[]>([])
+	const [isSpeaking, setIsSpeaking] = useState(false)
+	const [lastMessage, setLastMessage] = useState<string>('')
 
-	const messages = [
-		'Whats your name?',
-		'My name is John Doe, nice to meet you!',
-	]
-	const lastMessage = messages[messages.length - 1]
+	useEffect(() => {
+		const onCallStart = () => {
+			setCallStatus(CallStatus.ACTIVE)
+		}
+
+		const onCallEnd = () => {
+			setCallStatus(CallStatus.FINISHED)
+		}
+
+		const onMessage = (message: Message) => {
+			if (message.type === 'transcript' && message.transcriptType === 'final') {
+				const newMessage = { role: message.role, content: message.transcript }
+				setMessages(prev => [...prev, newMessage])
+			}
+		}
+
+		const onSpeechStart = () => {
+			console.log('speech start')	
+			setIsSpeaking(true)
+		}
+
+		const onSpeechEnd = () => {
+			console.log('speech end')
+			setIsSpeaking(false)
+		}
+
+		const onError = (error: Error) => {
+			console.log('Error:', error)
+		}
+
+		vapi.on('call-start', onCallStart)
+		vapi.on('call-end', onCallEnd)
+		vapi.on('message', onMessage)
+		vapi.on('speech-start', onSpeechStart)
+		vapi.on('speech-end', onSpeechEnd)
+		vapi.on('error', onError)
+
+		return () => {
+			vapi.off('call-start', onCallStart)
+			vapi.off('call-end', onCallEnd)
+			vapi.off('message', onMessage)
+			vapi.off('speech-start', onSpeechStart)
+			vapi.off('speech-end', onSpeechEnd)
+			vapi.off('error', onError)
+		}
+	}, [])
+
+	useEffect(() => {
+		if (messages.length > 0) {
+			setLastMessage(messages[messages.length - 1].content)
+		}
+
+		const handleGenerateFeedback = async (messages: SavedMessage[]) => {
+			console.log('handleGenerateFeedback')
+
+			const { success, feedbackId: id } = await createFeedback({
+				interviewId: interviewId!,
+				userId: userId!,
+				transcript: messages,
+				feedbackId,
+			})
+
+			if (success && id) {
+				router.push(`/interview/${interviewId}/feedback`)
+			} else {
+				console.log('Error saving feedback')
+				router.push('/')
+			}
+		}
+
+		if (callStatus === CallStatus.FINISHED) {
+			if (type === 'generate') {
+				router.push('/')
+			} else {
+				handleGenerateFeedback(messages)
+			}
+		}
+	}, [messages, callStatus, feedbackId, interviewId, router, type, userId])
+
+	const handleCall = async () => {
+		setCallStatus(CallStatus.CONNECTING)
+
+		if (type === 'generate') {
+			await vapi.start(process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID!, {
+				variableValues: {
+					username: userName,
+					userid: userId,
+				},
+			})
+		} else {
+			let formattedQuestions = ''
+			if (questions) {
+				formattedQuestions = questions
+					.map(question => `- ${question}`)
+					.join('\n')
+			}
+
+			await vapi.start(interviewer, {
+				variableValues: {
+					questions: formattedQuestions,
+				},
+			})
+		}
+	}
+
+	const handleDisconnect = () => {
+		setCallStatus(CallStatus.FINISHED)
+		vapi.stop()
+	}
 
 	return (
 		<div className='px-0 sm:px-4'>
@@ -49,7 +173,7 @@ export default function Agent({ name }: { name: string }) {
 
 				<Card
 					className={`shadow-none rounded-md p-8 text-center h-80 flex flex-col gap-5 justify-between ${
-						isUserSpeaking ? 'bg-card' : 'bg-transparent'
+						isSpeaking ? 'bg-card' : 'bg-transparent'
 					}`}
 				>
 					<div className='w-auto h-full relative mx-auto p-5 flex-1 flex items-center justify-center'>
@@ -60,11 +184,11 @@ export default function Agent({ name }: { name: string }) {
 							height={96}
 							className='w-24 h-24 rounded-full object-cover'
 						/>
-						{isUserSpeaking && (
+						{isSpeaking && (
 							<span className='absolute inline-flex h-24 w-24 rounded-full bg-blue-400 opacity-75 animate-ping' />
 						)}
 					</div>
-					<h3 className='text-xl font-mono font-semibold'>{name} (You)</h3>
+					<h3 className='text-xl font-mono font-semibold'>{userName} (You)</h3>
 				</Card>
 			</div>
 
@@ -83,7 +207,7 @@ export default function Agent({ name }: { name: string }) {
 
 			<div className='w-full flex justify-center'>
 				{callStatus !== CallStatus.ACTIVE ? (
-					<Button className='relative'>
+					<Button className='relative' onClick={() => handleCall()}>
 						<span
 							className={cn(
 								'absolute animate-ping rounded-full opacity-75',
@@ -99,7 +223,12 @@ export default function Agent({ name }: { name: string }) {
 						</span>
 					</Button>
 				) : (
-					<Button className='bg-red-700 hover:bg-red-800'>End</Button>
+					<Button
+						onClick={() => handleDisconnect()}
+						className='bg-red-700 hover:bg-red-800'
+					>
+						End
+					</Button>
 				)}
 			</div>
 		</div>
