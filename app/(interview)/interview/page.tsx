@@ -14,18 +14,18 @@ export default async function InterviewPage() {
 
 	return (
 		<>
-			<div className='flex items-center justify-between mb-8'>
+			<div className='flex flex-col sm:flex-row gap-3 sm:gap-0 items-center justify-between mb-8'>
 				<div className='flex items-center gap-3'>
 					<Activity className='text-primary' />
 
 					<h1 className='text-xl font-semibold'>
-						Frontend Developer Interview
+						Developer Interview
 					</h1>
 				</div>
 				<Badge variant={'destructive'}>Technical Interview</Badge>
 			</div>
 
-			<Agent userId={user.id} userName={user?.name} type="generate" />
+			<Agent userId={user.id} userName={user?.name} type='generate' />
 		</>
 	)
 }

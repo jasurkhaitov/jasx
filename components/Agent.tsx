@@ -10,6 +10,7 @@ import { interviewer } from '@/constants'
 import { createFeedback } from '@/lib/actions/general.action'
 import { Card } from './ui/card'
 import { Button } from './ui/button'
+import { Phone } from 'lucide-react'
 
 enum CallStatus {
 	INACTIVE = 'INACTIVE',
@@ -54,12 +55,10 @@ export default function Agent({
 		}
 
 		const onSpeechStart = () => {
-			console.log('speech start')	
 			setIsSpeaking(true)
 		}
 
 		const onSpeechEnd = () => {
-			console.log('speech end')
 			setIsSpeaking(false)
 		}
 
@@ -90,7 +89,6 @@ export default function Agent({
 		}
 
 		const handleGenerateFeedback = async (messages: SavedMessage[]) => {
-			console.log('handleGenerateFeedback')
 
 			const { success, feedbackId: id } = await createFeedback({
 				interviewId: interviewId!,
@@ -102,7 +100,6 @@ export default function Agent({
 			if (success && id) {
 				router.push(`/interview/${interviewId}/feedback`)
 			} else {
-				console.log('Error saving feedback')
 				router.push('/')
 			}
 		}
@@ -176,7 +173,7 @@ export default function Agent({
 						isSpeaking ? 'bg-card' : 'bg-transparent'
 					}`}
 				>
-					<div className='w-auto h-full relative mx-auto p-5 flex-1 flex items-center justify-center'>
+					<div className='w-auto h-full mx-auto p-5 flex-1 flex items-center justify-center'>
 						<Image
 							src='/user-avatar.png'
 							alt='Adrian'
@@ -184,9 +181,6 @@ export default function Agent({
 							height={96}
 							className='w-24 h-24 rounded-full object-cover'
 						/>
-						{isSpeaking && (
-							<span className='absolute inline-flex h-24 w-24 rounded-full bg-blue-400 opacity-75 animate-ping' />
-						)}
 					</div>
 					<h3 className='text-xl font-mono font-semibold'>{userName} (You)</h3>
 				</Card>
@@ -215,11 +209,15 @@ export default function Agent({
 							)}
 						/>
 
-						<span>
+						<span className='flex items-center justify-between gap-2'>
 							{callStatus === CallStatus.INACTIVE ||
-							callStatus === CallStatus.FINISHED
-								? 'Call'
-								: '. . . '}
+							callStatus === CallStatus.FINISHED ? (
+								<>
+									<Phone /> Call
+								</>
+							) : (
+								'Calling... '
+							)}
 						</span>
 					</Button>
 				) : (

@@ -9,14 +9,7 @@ import {
 	CardTitle,
 } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import {
-	Brain,
-	MessageSquare,
-	TrendingUp,
-	Users,
-	CheckCircle,
-	Star,
-} from 'lucide-react'
+import { Brain, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ModeToggle } from '@/components/theme/theme-toggle'
@@ -52,7 +45,7 @@ export default function BrowsePage() {
 			</header>
 
 			<section className='relative pt-48 pb-32'>
-				<div className='px-4 md:px-6'>
+				<div className='px-0 sm:px-4 md:px-6'>
 					<div className='flex flex-col items-center space-y-4 text-center'>
 						<div className='space-y-2'>
 							<Badge className='mb-4'>AI-Powered Interview Prep</Badge>
@@ -78,7 +71,7 @@ export default function BrowsePage() {
 				</div>
 			</section>
 
-			<section className='py-32 border-y'>
+			<section className='pt-32 pb-18 border-y'>
 				<div className='flex flex-col items-center justify-center space-y-4 text-center'>
 					<div className='space-y-2'>
 						<h2 className='text-3xl font-bold tracking-tighter lg:text-4xl/none text-balance'>
@@ -96,7 +89,7 @@ export default function BrowsePage() {
 					<Card className='relative overflow-hidden'>
 						<CardHeader>
 							<Brain className='h-12 w-12 text-primary mb-4' />
-							<CardTitle>AI Mock Interviews</CardTitle>
+							<CardTitle>Take Interview with AI</CardTitle>
 							<CardDescription>
 								Practice with our advanced AI interviewer that adapts to your
 								industry and role
@@ -117,169 +110,6 @@ export default function BrowsePage() {
 									Unlimited practice sessions
 								</li>
 							</ul>
-						</CardContent>
-					</Card>
-					<Card className='relative overflow-hidden'>
-						<CardHeader>
-							<MessageSquare className='h-12 w-12 text-primary mb-4' />
-							<CardTitle>Instant Feedback</CardTitle>
-							<CardDescription>
-								Get detailed analysis of your responses, body language, and
-								communication skills
-							</CardDescription>
-						</CardHeader>
-						<CardContent>
-							<ul className='space-y-2 text-sm'>
-								<li className='flex items-center gap-2'>
-									<CheckCircle className='h-4 w-4 text-primary' />
-									Speech analysis
-								</li>
-								<li className='flex items-center gap-2'>
-									<CheckCircle className='h-4 w-4 text-primary' />
-									Content evaluation
-								</li>
-								<li className='flex items-center gap-2'>
-									<CheckCircle className='h-4 w-4 text-primary' />
-									Improvement suggestions
-								</li>
-							</ul>
-						</CardContent>
-					</Card>
-					<Card className='relative overflow-hidden'>
-						<CardHeader>
-							<TrendingUp className='h-12 w-12 text-primary mb-4' />
-							<CardTitle>Track Progress</CardTitle>
-							<CardDescription>
-								Monitor your improvement over time with detailed analytics and
-								insights
-							</CardDescription>
-						</CardHeader>
-						<CardContent>
-							<ul className='space-y-2 text-sm'>
-								<li className='flex items-center gap-2'>
-									<CheckCircle className='h-4 w-4 text-primary' />
-									Performance metrics
-								</li>
-								<li className='flex items-center gap-2'>
-									<CheckCircle className='h-4 w-4 text-primary' />
-									Skill development
-								</li>
-								<li className='flex items-center gap-2'>
-									<CheckCircle className='h-4 w-4 text-primary' />
-									Goal tracking
-								</li>
-							</ul>
-						</CardContent>
-					</Card>
-				</div>
-			</section>
-
-			<section className='py-32'>
-				<div className='flex flex-col items-center justify-center space-y-4 text-center'>
-					<div className='space-y-2'>
-						<h2 className='text-3xl font-bold tracking-tighter lg:text-4xl/none text-balance'>
-							Success Stories
-						</h2>
-						<p className='max-w-[900px] text-muted-foreground text-sm md:text-base text-pretty'>
-							Join thousands of professionals who have landed their dream jobs
-							with JasX
-						</p>
-					</div>
-				</div>
-				<div className='mx-auto grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-3 lg:gap-10'>
-					<Card>
-						<CardHeader>
-							<div className='flex items-center gap-2'>
-								<div className='flex'>
-									{[...Array(5)].map((_, i) => (
-										<Star
-											key={i}
-											className='h-4 w-4 fill-primary text-primary'
-										/>
-									))}
-								</div>
-							</div>
-						</CardHeader>
-						<CardContent>
-							<blockquote className='text-sm italic mb-4'>
-								&quot;JasX helped me land my dream job at a Fortune 500 company.
-								The AI feedback was incredibly detailed and helped me improve my
-								confidence.&quot;
-							</blockquote>
-							<div className='flex items-center gap-2'>
-								<div className='h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center'>
-									<Users className='h-4 w-4 text-primary' />
-								</div>
-								<div>
-									<p className='text-sm font-medium'>Sarah Chen</p>
-									<p className='text-xs text-muted-foreground'>
-										Software Engineer
-									</p>
-								</div>
-							</div>
-						</CardContent>
-					</Card>
-					<Card>
-						<CardHeader>
-							<div className='flex items-center gap-2'>
-								<div className='flex'>
-									{[...Array(5)].map((_, i) => (
-										<Star
-											key={i}
-											className='h-4 w-4 fill-primary text-primary'
-										/>
-									))}
-								</div>
-							</div>
-						</CardHeader>
-						<CardContent>
-							<blockquote className='text-sm italic mb-4'>
-								&quot;The mock interviews felt so realistic. I was completely
-								prepared for my actual interview and got the job offer the same
-								day!&quot;
-							</blockquote>
-							<div className='flex items-center gap-2'>
-								<div className='h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center'>
-									<Users className='h-4 w-4 text-primary' />
-								</div>
-								<div>
-									<p className='text-sm font-medium'>Michael Rodriguez</p>
-									<p className='text-xs text-muted-foreground'>
-										Product Manager
-									</p>
-								</div>
-							</div>
-						</CardContent>
-					</Card>
-					<Card>
-						<CardHeader>
-							<div className='flex items-center gap-2'>
-								<div className='flex'>
-									{[...Array(5)].map((_, i) => (
-										<Star
-											key={i}
-											className='h-4 w-4 fill-primary text-primary'
-										/>
-									))}
-								</div>
-							</div>
-						</CardHeader>
-						<CardContent>
-							<blockquote className='text-sm italic mb-4'>
-								&quot;As someone who struggled with interview anxiety, JasX gave
-								me the practice and confidence I needed. Highly recommend!&quot;
-							</blockquote>
-							<div className='flex items-center gap-2'>
-								<div className='h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center'>
-									<Users className='h-4 w-4 text-primary' />
-								</div>
-								<div>
-									<p className='text-sm font-medium'>Emily Johnson</p>
-									<p className='text-xs text-muted-foreground'>
-										Marketing Director
-									</p>
-								</div>
-							</div>
 						</CardContent>
 					</Card>
 				</div>
